@@ -600,25 +600,6 @@ async function loadFromGitHubNewestFirst(){
     alt: it.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g,' ')
   }));
 }
-/${GH.repo}/contents/${GH.folder}?ref=${GH.branch}`;
-  const res = await fetch(url, { headers:{ 'Accept':'application/vnd.github+json' } });
-  if(!res.ok) throw new Error('GitHub API error ' + res.status);
-  const items = await res.json();
-  const images = (Array.isArray(items) ? items : []).filter(it => it.type === 'file' && _isImageName(it.name));
-
-  // Deduplicate against existing postsData by filename
-  const existing = new Set((postsData || []).map(p => _basename(p.image)));
-  const newOnes = images
-    .sort((a,b)=> b.name.localeCompare(a.name)) // newest-ish first by name
-    .filter(it => !existing.has(it.name.toLowerCase()))
-    .map(it => ({
-      link: it.html_url,
-      image: it.download_url + (it.sha ? `?v=${it.sha}` : ''),
-      alt: it.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ')
-    }));
-
-  if (newOnes.length) postsData.push(...newOnes);
-}
 
 // ================= CUSTOMIZATION DATA =================
 // Profile picture
@@ -820,9 +801,7 @@ function generateGrid(containerId, data) {
     postContainer.appendChild(link);
     postContainer.appendChild(overlay);
     // attach click handler to open modal
-    postContainer.addEventListener('click', () => {
-      openModal(item, index);
-    });
+    postContainer.addEventListener('click', (e) => { e.preventDefault(); openModal(item, index); });
     grid.appendChild(postContainer);
   });
 }
