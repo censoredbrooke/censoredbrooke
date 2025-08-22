@@ -565,8 +565,42 @@ const _basename = u => {
   catch(e){ return String(u||'').toLowerCase(); }
 };
 
-async function loadFromGitHubAndAppend(){
+
+// Fetch images from GitHub and return newest-first (by last commit date)
+async function loadFromGitHubNewestFirst(){
   const url = `https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.folder}?ref=${GH.branch}`;
+  const res = await fetch(url, { headers:{ 'Accept':'application/vnd.github+json' } });
+  if (!res.ok) throw new Error('GitHub API error ' + res.status);
+  const items = await res.json();
+  const files = (Array.isArray(items) ? items : []).filter(it => it.type === 'file' && _isImageName(it.name));
+
+  // Fetch the most recent commit date per file (rate-limited to ~60/hr unauthenticated)
+  const withDates = await Promise.all(files.map(async (it) => {
+    let t = 0;
+    try {
+      const cUrl = `https://api.github.com/repos/${GH.owner}/${GH.repo}/commits?path=${encodeURIComponent(GH.folder + '/' + it.name)}&sha=${GH.branch}&per_page=1`;
+      const cRes = await fetch(cUrl, { headers:{ 'Accept':'application/vnd.github+json' } });
+      if (cRes.ok) {
+        const commits = await cRes.json();
+        const d = commits?.[0]?.commit?.author?.date || commits?.[0]?.commit?.committer?.date;
+        if (d) t = new Date(d).getTime();
+      }
+    } catch(e){ /* ignore and leave t=0 */ }
+    return { ...it, _t: t };
+  }));
+
+  // Sort: newest commit first, then by name
+  withDates.sort((a,b) => (b._t - a._t) || b.name.localeCompare(a.name));
+
+  // Map to post objects
+  return withDates.map((it) => ({
+    name: it.name,
+    link: it.html_url,
+    image: it.download_url + (it.sha ? `?v=${it.sha}` : ''),
+    alt: it.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g,' ')
+  }));
+}
+/${GH.repo}/contents/${GH.folder}?ref=${GH.branch}`;
   const res = await fetch(url, { headers:{ 'Accept':'application/vnd.github+json' } });
   if(!res.ok) throw new Error('GitHub API error ' + res.status);
   const items = await res.json();
@@ -618,6 +652,12 @@ let postsData = [
   { link: '#', image: 'https://i.ibb.co/3mCv7n2/demo2.jpg', alt: 'Demo 2' },
   { link: '#', image: 'https://i.ibb.co/3y5zJm0/demo3.jpg', alt: 'Demo 3' }
 ];
+
+// Remove unused i.ibb.co images from static seed
+if (Array.isArray(postsData)) {
+  postsData = postsData.filter(p => !/https?:\/\/i\.ibb\.co\//i.test((p && p.image) || ''));
+}
+
 // Reels data (vertical aspect ratio). For demonstration uses same images; you can replace.
 const reelsData = postsData.map(item => Object.assign({}, item));
 // Tagged data
@@ -796,13 +836,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   generateGrid('reels-grid', reelsData);
   generateGrid('tagged-grid', taggedData);
   
-  // Load any new images from GitHub and append, then rebuild posts
+  // Load newest images from GitHub (prepend so they appear above existing)
   try {
-    await loadFromGitHubAndAppend();
+    const ghImages = await loadFromGitHubNewestFirst();
+    // Deduplicate by basename
+    const seen = new Set((postsData||[]).map(p => _basename(p.image)));
+    const merged = [...ghImages.filter(it => !_basename(it.image) || !seen.has(_basename(it.image))), ...postsData];
+    postsData = merged;
     if (typeof generateGrid === 'function') {
       generateGrid('posts-grid', postsData);
     }
-    var pc = document.getElementById('post-count');
+    const pc = document.getElementById('post-count');
     if (pc) pc.textContent = postsData.length;
   } catch (e) {
     console.warn('GitHub load failed:', e);
