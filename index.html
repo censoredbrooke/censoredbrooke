@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brooke Monk • Instagram</title>
+<!-- Colour scheme meta ensures form controls follow theme -->
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+/* CSS variables for theming */
+:root {
+  --bg-color: #fafafa;
+  --text-color: #262626;
+  --border-color: #dbdbdb;
+  --accent-color: #0095f6;
+  --secondary-text: #8e8e8e;
+  --overlay-bg: rgba(0,0,0,0.3);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #000;
+    --text-color: #fafafa;
+    --border-color: #2c2c2c;
+    --accent-color: #0095f6;
+    --secondary-text: #a5a5a5;
+    --overlay-bg: rgba(0,0,0,0.5);
+  }
+}
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg-color);
+  color: var(--text-color);
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 0;
+  padding: 8px 12px;
+  background: var(--accent-color);
+  color: #fff;
+  z-index: 999;
+  border-radius: 4px;
+  text-decoration: none;
+}
+.skip-link:focus {
+  left: 12px;
+  top: 12px;
+}
+header {
+  background: var(--bg-color);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-content {
+  max-width: 935px;
+  margin: 0 auto;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.logo {
+  font-family: 'Brush Script MT', cursive;
+  font-size: 28px;
+  font-weight: 500;
+}
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: var(--border-color);
+  border-radius: 8px;
+  padding: 6px 12px;
+  color: var(--secondary-text);
+  font-size: 14px;
+  width: 268px;
+}
+.search-bar i {
+  margin-right: 6px;
+}
+.nav-icons {
+  display: flex;
+  gap: 20px;
+  font-size: 22px;
+}
+.nav-icons button {
+  background: none;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.2s;
+}
+.nav-icons button:hover,
+.nav-icons button:focus-visible {
+  transform: scale(1.1);
+}
+.container {
+  max-width: 935px;
+  margin: 0 auto;
+  padding: 20px 16px;
+}
+.profile-header {
+  display: flex;
+  align-items: flex-start;
+  padding: 30px 0;
+  flex-wrap: wrap;
+}
+.profile-picture-container {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  margin-right: 30px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.profile-info {
+  flex: 1;
+  min-width: 260px;
+}
+.profile-top {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.username {
+  font-size: 28px;
+  font-weight: 300;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+}
+.verified-badge {
+  color: var(--accent-color);
+  margin-left: 5px;
+  font-size: 18px;
+}
+.profile-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: 20px;
+  flex-wrap: wrap;
+}
+.action-btn {
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+  border: none;
+}
+.follow-btn {
+  background: var(--accent-color);
+  color: #fff;
+}
+.follow-btn:hover {
+  background: #007edb;
+}
+.message-btn {
+  background: var(--border-color);
+  color: var(--text-color);
+}
+.message-btn:hover {
+  background: var(--secondary-text);
+  color: var(--bg-color);
+}
+.more-btn {
+  background: var(--border-color);
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.profile-stats {
+  display: flex;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.stat {
+  margin-right: 40px;
+  font-size: 16px;
+}
+.stat strong {
+  font-weight: 600;
+}
+.full-name {
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-size: 16px;
+}
+.bio {
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+.website {
+  color: #00376b;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 14px;
+  display: block;
+  margin-top: 8px;
+}
+.website:hover {
+  text-decoration: underline;
+}
+/* modal overlay for viewing posts */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 200;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+}
+.modal.open {
+  opacity: 1;
+  visibility: visible;
+}
+.modal-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.modal-content img {
+  max-width: 100%;
+  max-height: 80vh;
+  border-radius: 4px;
+}
+.modal-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 32px;
+  cursor: pointer;
+}
+.modal-details {
+  margin-top: 8px;
+  color: #fff;
+  text-align: left;
+  width: 100%;
+  padding: 8px;
+}
+body.modal-open {
+  overflow: hidden;
+}
+/* Tabs */
+.tabs {
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid var(--border-color);
+  margin-top: 20px;
+}
+.tabs button[role="tab"] {
+  background: none;
+  border: none;
+  padding: 16px 0;
+  margin: 0 30px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--secondary-text);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s;
+}
+.tabs button[role="tab"].active,
+.tabs button[role="tab"][aria-selected="true"] {
+  color: var(--text-color);
+}
+.tabs button[role="tab"].active::after,
+.tabs button[role="tab"][aria-selected="true"]::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--text-color);
+}
+.tabs i {
+  margin-right: 6px;
+  font-size: 14px;
+}
+.tab-panel {
+  margin-top: 20px;
+}
+.posts-grid {
+  display: grid;
+  /* Always display exactly three columns regardless of device size */
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+.reels-grid .post-container {
+  aspect-ratio: 9/16;
+}
+.tagged-grid .post-container {
+  aspect-ratio: 1/1;
+}
+.post-container {
+  position: relative;
+  cursor: pointer;
+  border-radius: 3px;
+  overflow: hidden;
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1/1;
+}
+.post-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+.post-container:focus-within img,
+.post-container:hover img {
+  transform: scale(1.05);
+}
+.post-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay-bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  font-weight: 600;
+  font-size: 16px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.post-container:hover .post-overlay,
+.post-container:focus-within .post-overlay {
+  opacity: 1;
+}
+.post-stat {
+  margin: 0 12px;
+  display: flex;
+  align-items: center;
+}
+.post-stat i {
+  margin-right: 6px;
+}
+/* bottom navigation for mobile */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-color);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 150;
+}
+.bottom-nav a {
+  font-size: 22px;
+  color: var(--text-color);
+  text-decoration: none;
+}
+.bottom-nav a:focus-visible,
+.bottom-nav a:hover {
+  color: var(--accent-color);
+}
+@media (min-width: 768px) {
+  .bottom-nav {
+    display: none;
+  }
+  .search-bar {
+    display: flex;
+  }
+  .profile-header {
+    flex-direction: row;
+  }
+}
+@media (max-width: 768px) {
+  .posts-grid {
+    gap: 3px;
+  }
+  .profile-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .profile-picture-container {
+    margin-right: 0;
+    margin-bottom: 20px;
+  }
+  .profile-actions {
+    margin-left: 0;
+    margin-top: 12px;
+    justify-content: center;
+  }
+  .profile-stats {
+    justify-content: center;
+  }
+  .header-content {
+    padding: 12px;
+  }
+}
+footer {
+  text-align: center;
+  padding: 40px 0 20px;
+  color: var(--secondary-text);
+  font-size: 12px;
+}
+.footer-links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.footer-links a {
+  color: var(--secondary-text);
+  text-decoration: none;
+}
+.footer-links a:hover {
+  text-decoration: underline;
+}
+</style>
+</head>
+<body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+<header>
+  <div class="header-content">
+    <div class="logo">Instagram</div>
+    <div class="search-bar">
+      <i class="fas fa-search" aria-hidden="true"></i>
+      <span>Search</span>
+    </div>
+    <div class="nav-icons">
+      <button type="button" aria-label="Notifications"><i class="far fa-heart"></i></button>
+      <button type="button" aria-label="Messages"><i class="far fa-paper-plane"></i></button>
+    </div>
+  </div>
+</header>
+<main id="main-content">
+  <div class="container">
+    <!-- Profile Section -->
+    <div class="profile-header">
+      <div class="profile-picture-container" id="profile-picture-container" aria-label="Profile picture"></div>
+      <div class="profile-info">
+        <div class="profile-top">
+          <div>
+            <h1 class="username">brookemonk
+              <i class="fas fa-check-circle verified-badge" aria-hidden="true"></i>
+            </h1>
+          </div>
+          <div class="profile-actions">
+            <button class="action-btn follow-btn" type="button">Following</button>
+            <button class="action-btn message-btn" type="button">Message</button>
+            <button class="action-btn more-btn" type="button" aria-label="More options"><i class="fas fa-chevron-down"></i></button>
+          </div>
+        </div>
+        <div class="profile-stats">
+          <div class="stat"><strong id="post-count">0</strong> posts</div>
+          <div class="stat"><strong>7.6M</strong> followers</div>
+          <div class="stat"><strong>720</strong> following</div>
+        </div>
+        <div class="full-name">Brooke Monk</div>
+        <div class="bio">Snap: brookemonk</div>
+        <div class="bio">1 Corinthians 13: 1-7</div>
+        <div class="bio">Contact email for promotions/brand deals</div>
+        <div class="bio">brooke@friendsinreality.com</div>
+        <a href="https://brookemonk.be" class="website">brookemonk.be</a>
+      </div>
+    </div>
+    <!-- Stories removed -->
+    <!-- Tabs -->
+    <div class="tabs" role="tablist">
+      <button id="tab-posts" role="tab" aria-controls="panel-posts" aria-selected="true" tabindex="0" class="active">
+        <i class="fas fa-th"></i><span class="sr-only">Posts</span>
+      </button>
+      <button id="tab-reels" role="tab" aria-controls="panel-reels" aria-selected="false" tabindex="-1">
+        <i class="fas fa-video"></i><span class="sr-only">Reels</span>
+      </button>
+      <button id="tab-tagged" role="tab" aria-controls="panel-tagged" aria-selected="false" tabindex="-1">
+        <i class="fas fa-tag"></i><span class="sr-only">Tagged</span>
+      </button>
+    </div>
+    <div id="panel-posts" class="tab-panel" role="tabpanel" aria-labelledby="tab-posts">
+      <div class="posts-grid posts-grid-panel" id="posts-grid"></div>
+    </div>
+    <div id="panel-reels" class="tab-panel" role="tabpanel" aria-labelledby="tab-reels" hidden>
+      <div class="posts-grid reels-grid" id="reels-grid"></div>
+    </div>
+    <div id="panel-tagged" class="tab-panel" role="tabpanel" aria-labelledby="tab-tagged" hidden>
+      <div class="posts-grid tagged-grid" id="tagged-grid"></div>
+    </div>
+  </div>
+</main>
+<nav class="bottom-nav" aria-label="Primary">
+  <a href="#" aria-label="Home"><i class="fas fa-home"></i></a>
+  <a href="#" aria-label="Search"><i class="fas fa-search"></i></a>
+  <a href="#" aria-label="New Post"><i class="far fa-square-plus"></i></a>
+  <a href="#" aria-label="Reels"><i class="fas fa-video"></i></a>
+  <a href="#" aria-label="Profile"><i class="far fa-user-circle"></i></a>
+</nav>
+<footer>
+  <div class="footer-links">
+    <a href="#">Meta</a>
+    <a href="#">About</a>
+    <a href="#">Blog</a>
+    <a href="#">Jobs</a>
+    <a href="#">Help</a>
+    <a href="#">API</a>
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">Top Accounts</a>
+    <a href="#">Hashtags</a>
+    <a href="#">Locations</a>
+    <a href="#">Instagram Lite</a>
+  </div>
+  <div class="copyright">
+    English (UK) © 2025 Instagram from Meta
+  </div>
+</footer>
+<!-- Modal container for viewing posts -->
+<div id="modal" class="modal" hidden></div>
+<script>
+// ================= CUSTOMIZATION DATA =================
+// Profile picture
+const profilePicture = {
+  link: 'https://freeimage.host/',
+  image: 'https://iili.io/FAGCzLQ.jpg',
+  alt: 'Profile picture'
+};
+// Stories data (small circles). Provide names and images.
+const storiesData = [
+  { name: 'Your Story', image: profilePicture.image },
+  { name: 'Friend 1', image: 'https://iili.io/FAM5Hep.md.jpg' },
+  { name: 'Friend 2', image: 'https://iili.io/FAMRydv.md.jpg' },
+  { name: 'Friend 3', image: 'https://iili.io/FAMRmrJ.md.jpg' },
+  { name: 'Friend 4', image: 'https://iili.io/FAM53Xt.md.jpg' },
+  { name: 'Friend 5', image: 'https://iili.io/FAM5BrG.md.jpg' },
+  { name: 'Friend 6', image: 'https://iili.io/FAM5n2f.md.jpg' }
+];
+// Posts data
+const postsData = [
+  { link: 'https://freeimage.host/i/FAM5Hep', image: 'https://iili.io/FAM5Hep.md.jpg', alt: 'Post 1' },
+  { link: 'https://freeimage.host/i/FAMRydv', image: 'https://iili.io/FAMRydv.md.jpg', alt: 'Post 2' },
+  { link: 'https://freeimage.host/i/FAMRmrJ', image: 'https://iili.io/FAMRmrJ.md.jpg', alt: 'Post 3' },
+  { link: 'https://freeimage.host/i/FAM53Xt', image: 'https://iili.io/FAM53Xt.md.jpg', alt: 'Post 4' },
+  { link: 'https://freeimage.host/i/FAM5BrG', image: 'https://iili.io/FAM5BrG.md.jpg', alt: 'Post 5' },
+  { link: 'https://freeimage.host/i/FAM5n2f', image: 'https://iili.io/FAM5n2f.md.jpg', alt: 'Post 6' },
+  { link: '#', image: 'https://i.ibb.co/hV6x4Wg/post7.jpg', alt: 'Post 7' },
+  { link: '#', image: 'https://i.ibb.co/Q6x0T7q/post8.jpg', alt: 'Post 8' },
+  { link: '#', image: 'https://i.ibb.co/2F1M5Gt/post9.jpg', alt: 'Post 9' },
+  { link: '#', image: 'https://i.ibb.co/0cQb2J2/demo1.jpg', alt: 'Demo 1' },
+  { link: '#', image: 'https://i.ibb.co/3mCv7n2/demo2.jpg', alt: 'Demo 2' },
+  { link: '#', image: 'https://i.ibb.co/3y5zJm0/demo3.jpg', alt: 'Demo 3' }
+];
+// Reels data (vertical aspect ratio). For demonstration uses same images; you can replace.
+const reelsData = postsData.map(item => Object.assign({}, item));
+// Tagged data
+const taggedData = postsData.slice(6);
+// ================ END CUSTOMIZATION DATA ===============
+
+// Setup ARIA-compliant tabs
+const tabButtons = Array.from(document.querySelectorAll('[role="tab"]'));
+const tabPanels = Array.from(document.querySelectorAll('[role="tabpanel"]'));
+function activateTab(index) {
+  tabButtons.forEach((btn, i) => {
+    const selected = i === index;
+    btn.setAttribute('aria-selected', selected);
+    btn.setAttribute('tabindex', selected ? '0' : '-1');
+    btn.classList.toggle('active', selected);
+    tabPanels[i].hidden = !selected;
+  });
+  // Focus on selected tab for accessibility
+  tabButtons[index].focus();
+}
+tabButtons.forEach((btn, index) => {
+  btn.addEventListener('click', () => activateTab(index));
+  btn.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      const next = (index + 1) % tabButtons.length;
+      activateTab(next);
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      const prev = (index - 1 + tabButtons.length) % tabButtons.length;
+      activateTab(prev);
+    }
+  });
+});
+
+// Format numbers with commas
+function formatNumber(num) {
+  return new Intl.NumberFormat('en-US').format(num);
+}
+
+// Modal element used to display individual posts
+const modal = document.getElementById('modal');
+
+// Opens the modal with the given post data
+function openModal(item, index) {
+  if (!modal) return;
+  // Clear any existing modal content
+  modal.innerHTML = '';
+  // Create modal content container
+  const content = document.createElement('div');
+  content.className = 'modal-content';
+  // Close button
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'modal-close';
+  closeBtn.setAttribute('aria-label', 'Close');
+  closeBtn.innerHTML = '&times;';
+  closeBtn.addEventListener('click', closeModal);
+  content.appendChild(closeBtn);
+  // Image element (attempt to load larger image if available)
+  const img = document.createElement('img');
+  img.src = item.image.replace('.md.jpg', '.jpg');
+  img.alt = item.alt;
+  img.loading = 'lazy';
+  img.decoding = 'async';
+  content.appendChild(img);
+  // Details container
+  const details = document.createElement('div');
+  details.className = 'modal-details';
+  const likes = 1000000 + index * 7243;
+  details.innerHTML = '<div style="margin-bottom:4px;font-weight:600;">' + formatNumber(likes) + ' likes</div>' + '<div>' + item.alt + '</div>';
+  content.appendChild(details);
+  modal.appendChild(content);
+  // Show modal
+  modal.classList.add('open');
+  modal.removeAttribute('hidden');
+  document.body.classList.add('modal-open');
+}
+
+// Closes the modal and restores scroll
+function closeModal() {
+  if (!modal) return;
+  modal.classList.remove('open');
+  modal.setAttribute('hidden', '');
+  document.body.classList.remove('modal-open');
+}
+
+// Outside click closes modal
+if (modal) {
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+}
+
+// Listen for Escape key to close modal
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && modal && modal.classList.contains('open')) {
+    closeModal();
+  }
+});
+
+// Generate profile picture
+function renderProfilePicture() {
+  const container = document.getElementById('profile-picture-container');
+  container.innerHTML = '';
+  const link = document.createElement('a');
+  link.href = profilePicture.link;
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  const img = document.createElement('img');
+  img.src = profilePicture.image;
+  img.alt = profilePicture.alt;
+  img.style.width = '100%';
+  img.style.height = '100%';
+  img.style.objectFit = 'cover';
+  img.loading = 'lazy';
+  img.decoding = 'async';
+  link.appendChild(img);
+  container.appendChild(link);
+}
+
+// Stories rendering function removed
+
+// Generate posts grid for given data and container id
+function generateGrid(containerId, data) {
+  const grid = document.getElementById(containerId);
+  if (!grid) return;
+  grid.innerHTML = '';
+  data.forEach((item, index) => {
+    const postContainer = document.createElement('div');
+    postContainer.className = 'post-container';
+    postContainer.setAttribute('tabindex', '0');
+    // link wrapper
+    const link = document.createElement('a');
+    link.href = item.link;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    // image
+    const img = document.createElement('img');
+    img.src = item.image;
+    img.alt = item.alt;
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    link.appendChild(img);
+    // overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'post-overlay';
+    // deterministic likes/comments based on index
+    const likes = 1000000 + index * 7243;
+    const comments = 5000 + index * 173;
+    const likesEl = document.createElement('div');
+    likesEl.className = 'post-stat';
+    likesEl.innerHTML = '<i class="fas fa-heart"></i> ' + formatNumber(likes);
+    const commentsEl = document.createElement('div');
+    commentsEl.className = 'post-stat';
+    commentsEl.innerHTML = '<i class="fas fa-comment"></i> ' + formatNumber(comments);
+    overlay.appendChild(likesEl);
+    overlay.appendChild(commentsEl);
+    postContainer.appendChild(link);
+    postContainer.appendChild(overlay);
+    // attach click handler to open modal
+    postContainer.addEventListener('click', () => {
+      openModal(item, index);
+    });
+    grid.appendChild(postContainer);
+  });
+}
+
+// Initialize the page
+document.addEventListener('DOMContentLoaded', () => {
+  renderProfilePicture();
+  // stories removed
+  // Generate posts for each tab
+  generateGrid('posts-grid', postsData);
+  generateGrid('reels-grid', reelsData);
+  generateGrid('tagged-grid', taggedData);
+  // update post count
+  document.getElementById('post-count').textContent = postsData.length;
+  // animate posts fade-in using IntersectionObserver
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.post-container').forEach((el) => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    observer.observe(el);
+  });
+});
+</script>
+</body>
+</html>
