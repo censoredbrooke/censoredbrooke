@@ -556,6 +556,36 @@ footer {
 <!-- Modal container for viewing posts -->
 <div id="modal" class="modal" hidden></div>
 <script>
+
+/* ===== GitHub Auto Loader (keeps existing posts & pfp) ===== */
+const GH = { owner:'censoredbrooke', repo:'censoredbrooke', branch:'main', folder:'img' };
+const _isImageName = n => /\.(jpe?g|png|webp|gif)$/i.test(n || '');
+const _basename = u => {
+  try { return (u||'').split('?')[0].split('#')[0].split('/').pop().toLowerCase(); }
+  catch(e){ return String(u||'').toLowerCase(); }
+};
+
+async function loadFromGitHubAndAppend(){
+  const url = `https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.folder}?ref=${GH.branch}`;
+  const res = await fetch(url, { headers:{ 'Accept':'application/vnd.github+json' } });
+  if(!res.ok) throw new Error('GitHub API error ' + res.status);
+  const items = await res.json();
+  const images = (Array.isArray(items) ? items : []).filter(it => it.type === 'file' && _isImageName(it.name));
+
+  // Deduplicate against existing postsData by filename
+  const existing = new Set((postsData || []).map(p => _basename(p.image)));
+  const newOnes = images
+    .sort((a,b)=> b.name.localeCompare(a.name)) // newest-ish first by name
+    .filter(it => !existing.has(it.name.toLowerCase()))
+    .map(it => ({
+      link: it.html_url,
+      image: it.download_url + (it.sha ? `?v=${it.sha}` : ''),
+      alt: it.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ')
+    }));
+
+  if (newOnes.length) postsData.push(...newOnes);
+}
+
 // ================= CUSTOMIZATION DATA =================
 // Profile picture
 const profilePicture = {
@@ -574,7 +604,7 @@ const storiesData = [
   { name: 'Friend 6', image: 'https://iili.io/FAM5n2f.md.jpg' }
 ];
 // Posts data
-const postsData = [
+let postsData = [
   { link: 'https://freeimage.host/i/FAM5Hep', image: 'https://iili.io/FAM5Hep.md.jpg', alt: 'Post 1' },
   { link: 'https://freeimage.host/i/FAMRydv', image: 'https://iili.io/FAMRydv.md.jpg', alt: 'Post 2' },
   { link: 'https://freeimage.host/i/FAMRmrJ', image: 'https://iili.io/FAMRmrJ.md.jpg', alt: 'Post 3' },
@@ -758,14 +788,26 @@ function generateGrid(containerId, data) {
 }
 
 // Initialize the page
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   renderProfilePicture();
   // stories removed
   // Generate posts for each tab
   generateGrid('posts-grid', postsData);
   generateGrid('reels-grid', reelsData);
   generateGrid('tagged-grid', taggedData);
-  // update post count
+  
+  // Load any new images from GitHub and append, then rebuild posts
+  try {
+    await loadFromGitHubAndAppend();
+    if (typeof generateGrid === 'function') {
+      generateGrid('posts-grid', postsData);
+    }
+    var pc = document.getElementById('post-count');
+    if (pc) pc.textContent = postsData.length;
+  } catch (e) {
+    console.warn('GitHub load failed:', e);
+  }
+// update post count
   document.getElementById('post-count').textContent = postsData.length;
   // animate posts fade-in using IntersectionObserver
   const observer = new IntersectionObserver((entries) => {
